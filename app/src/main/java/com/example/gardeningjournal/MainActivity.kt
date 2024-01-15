@@ -35,15 +35,5 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
         val navController = navHostFragment.navController
         bottomNav.setupWithNavController(navController)
-
-//        bottomNav.setOnItemSelectedListener { item ->
-//            when (item.itemId) {
-//                R.id.navigation_home -> fragmentContainerView.getFragment()
-//                R.id.navigation_garden_log -> fragmentContainerView.getFragment()
-//                R.id.navigation_plant_details -> fragmentContainerView.getFragment()
-//            }
-//            true
-//        }
-
     }
 }

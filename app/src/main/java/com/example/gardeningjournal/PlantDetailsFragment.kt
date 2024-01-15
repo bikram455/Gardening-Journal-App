@@ -5,55 +5,68 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [PlantDetailsFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
+import android.widget.TextView
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import com.example.gardeningjournal.data.GardenLogViewModel
+import com.example.gardeningjournal.data.GardenLogViewModelFactory
+import com.example.gardeningjournal.data.PlantDetailsViewModel
+import com.example.gardeningjournal.data.PlantDetailsViewModelFactory
+import com.example.gardeningjournal.database.InitPlantDB
+import com.example.gardeningjournal.database.PlantRepo
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import java.text.SimpleDateFormat
 class PlantDetailsFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private lateinit var viewModel: PlantDetailsViewModel
+    private lateinit var plantName: TextView
+    private lateinit var plantType: TextView
+    private lateinit var wateringFrequency: TextView
+    private lateinit var plantedDate: TextView
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_plant_details, container, false)
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment PlantDetailsFragment.
-         */
-        // TODO: Rename and change types and number of parameters
+
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
             PlantDetailsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+
             }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        plantName = view.findViewById(R.id.plantName)
+        plantType = view.findViewById(R.id.plantType)
+        plantedDate = view.findViewById(R.id.plantedDate)
+        wateringFrequency = view.findViewById(R.id.wateringFrequency)
+
+        val application = requireNotNull(this.activity).application
+        val dataSource = InitPlantDB.getDatabase(application).plantDao()
+        val repository = PlantRepo(dataSource)
+        val viewModelFactory = PlantDetailsViewModelFactory(repository)
+        viewModel = ViewModelProvider(this, viewModelFactory)
+            .get(PlantDetailsViewModel::class.java)
+
+        val plantId = arguments?.getInt("position", -1)
+        viewModel.getPlant(plantId).observe(viewLifecycleOwner, Observer {
+            it?.let {
+                plantName.text = "Plant Name: ${it.name}"
+                plantType.text = "Plant Type: ${it.type}"
+                wateringFrequency.text = "Needs to be watered every ${it.wateringFrequency.toString()} days."
+                plantedDate.text = "Date planted: ${it.plantedDate}"
+            }
+        })
     }
 }
