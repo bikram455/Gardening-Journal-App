@@ -16,10 +16,10 @@
         android:textSize="30sp"
     />
     <TextView
+        android:id="@+id/home_desc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="25sp"
-        android:text="@string/home_desc"
         android:textStyle="italic"
         />
 

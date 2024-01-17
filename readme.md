@@ -6,7 +6,7 @@ Brief description or introduction to your project.
 ## Table of Contents
 
 - [Description](#description)
-- [Installation & Running](#installation)
+- [Installation & Running](#installation-And-running)
 - [Screenshots](#screenshots)
 
 ## Description
@@ -15,7 +15,7 @@ Gardening Journal App is a project developed as part of the submission for `CS47
 
 This application makes use of ViewModel, LiveData, Navigation component, NavHostFragment, Room database, and coroutine concepts to add and display plant data as a gardening log. The data is stored and retrieved with the help of Room Database and displayed using a recyclerView.
 
-## Installation
+## Installation And Running
 
 - Clone the project
 - Open it in your local IDE (Android Studio, IntelliJ)
