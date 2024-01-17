@@ -17,24 +17,33 @@ import com.example.gardeningjournal.data.GardenLogViewModel
 import com.example.gardeningjournal.data.GardenLogViewModelFactory
 import com.example.gardeningjournal.data.PlantDetailsViewModel
 import com.example.gardeningjournal.data.PlantDetailsViewModelFactory
-import com.example.gardeningjournal.database.InitPlantDB
+import com.example.gardeningjournal.database.PlantDB
 import com.example.gardeningjournal.database.PlantEntity
 import com.example.gardeningjournal.database.PlantRepo
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-class PlantDetailsFragment : Fragment() {
-    private lateinit var viewModel: PlantDetailsViewModel
+import kotlin.coroutines.CoroutineContext
+
+class PlantDetailsFragment : Fragment(), CoroutineScope {
     private lateinit var plantName: TextView
     private lateinit var plantType: TextView
     private lateinit var wateringFrequency: TextView
     private lateinit var plantedDate: TextView
     private lateinit var backButton: Button
 
+    private lateinit var job: Job
+    override val coroutineContext: CoroutineContext
+        get() = job + Dispatchers.Main
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,26 +70,18 @@ class PlantDetailsFragment : Fragment() {
         backButton = view.findViewById(R.id.back)
 
         val application = requireNotNull(this.activity).application
-        val dataSource = InitPlantDB.getDatabase(application).plantDao()
-        val repository = PlantRepo(dataSource)
-        val viewModelFactory = PlantDetailsViewModelFactory(repository)
-        viewModel = ViewModelProvider(this, viewModelFactory)
-            .get(PlantDetailsViewModel::class.java)
 
         val plantId = arguments?.getInt("position", -1)
-        viewModel.getPlant(plantId).observe(viewLifecycleOwner, Observer {
-            it?.let {
-                plantName.text = "Plant Name: ${it.name}"
-                plantType.text = "Plant Type: ${it.type}"
-                wateringFrequency.text = "Needs to be watered every ${it.wateringFrequency.toString()} days."
-                plantedDate.text = "Date planted: ${it.plantedDate}"
-            }
-        })
-        lifecycleScope.launch {
-            try {
 
-            } catch (e: Exception) {
-
+        job = Job()
+        launch {
+            context?.let {
+                val plant  = PlantDB(it).plantDao().selectPlantById(plantId)
+                println("Plant fetched ${plant.name}")
+                plantName.text = "Plant Name: ${plant.name}"
+                plantType.text = "Plant Type: ${plant.type}"
+                wateringFrequency.text = "Needs to be watered every ${plant.wateringFrequency.toString()} days."
+                plantedDate.text = "Date planted: ${plant.plantedDate}"
             }
         }
 

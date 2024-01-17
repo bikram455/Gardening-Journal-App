@@ -16,17 +16,25 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gardeningjournal.data.GardenLogViewModel
 import com.example.gardeningjournal.data.GardenLogViewModelFactory
-import com.example.gardeningjournal.database.InitPlantDB
+import com.example.gardeningjournal.database.PlantDB
 import com.example.gardeningjournal.database.PlantEntity
 import com.example.gardeningjournal.database.PlantRepo
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
 
-class GardenLogFragment : Fragment() {
+class GardenLogFragment : Fragment(), CoroutineScope {
     private lateinit var viewModel: GardenLogViewModel
     private lateinit var fab: FloatingActionButton
     private lateinit var recyclerView: RecyclerView
+    private lateinit var job: Job
+    override val coroutineContext: CoroutineContext
+        get() = job + Dispatchers.Main
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,7 +63,7 @@ class GardenLogFragment : Fragment() {
         }
 
         val application = requireNotNull(this.activity).application
-        val dataSource = InitPlantDB.getDatabase(application).plantDao()
+        val dataSource = PlantDB(application).plantDao()
         val repository = PlantRepo(dataSource)
         val viewModelFactory = GardenLogViewModelFactory(repository)
         viewModel = ViewModelProvider(this, viewModelFactory)
@@ -64,21 +72,22 @@ class GardenLogFragment : Fragment() {
         recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        viewModel.plants.observe(viewLifecycleOwner, Observer {
-            it?.let {
-//                val adapter = GardenLogAdapter(it.toList(), object : GardenLogAdapter.OnItemClickListener {
-//                    override fun onItemClick(position: Int) {
-//                        navigateToDetailsFragment(position)
-//                    }
-//                })
-                val adapter = GardenLogAdapter(it.toList()) { pos: Int ->
+        job = Job()
+        fetchPlants()
+    }
+
+    private fun fetchPlants() {
+        launch {
+            context?.let {
+                val plants = PlantDB(it).plantDao().selectAll()
+                val adapter = GardenLogAdapter(plants.toList()) { pos: Int ->
                     val action =
                         GardenLogFragmentDirections.actionGardenFragmentToPlantFragment(pos)
                     findNavController().navigate(action)
                 }
                 recyclerView.adapter = adapter
             }
-        })
+        }
     }
 
     private fun navigateToDetailsFragment(position: Int) {
@@ -112,11 +121,12 @@ class GardenLogFragment : Fragment() {
                     plantName.text.toString(), plantType.text.toString(),
                     wateringFrequency.text.toString().toInt(), dateValue, calInstance.timeInMillis);
                 viewModel.insertPlant(plant)
-                Snackbar.make(requireView(), "Added $plantName to garden log entry.", Snackbar.LENGTH_SHORT).show()
+                fetchPlants()
+                Snackbar.make(requireView(), "Added ${plantName.text.toString()} to garden log entry.", Snackbar.LENGTH_SHORT).show()
             }
             .setNegativeButton("Cancel") { dialog, which ->
 //                context?.deleteDatabase("plant_database")
-                Snackbar.make(requireView(), "AlertDialog dismissed", Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(requireView(), "Garden log add modal dismissed", Snackbar.LENGTH_SHORT).show()
             }
             .setCancelable(false)
             .create()

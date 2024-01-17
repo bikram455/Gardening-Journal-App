@@ -19,5 +19,7 @@ interface PlantDao {
     fun selectPlant(id: Int?): LiveData<PlantEntity>
 
     @Query("Select * from plants where id= :id")
-    fun selectPlantById(id: Int?): PlantEntity
+    suspend fun selectPlantById(id: Int?): PlantEntity
+    @Query("Select * from plants")
+    suspend fun selectAll(): Array<PlantEntity>
 }
