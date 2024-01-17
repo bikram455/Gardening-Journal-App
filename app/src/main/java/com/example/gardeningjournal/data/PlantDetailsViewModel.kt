@@ -16,6 +16,9 @@ class PlantDetailsViewModel(val plantRepo: PlantRepo): ViewModel() {
     fun getPlant(id: Int?): LiveData<PlantEntity> {
         return plantRepo.selectPlant(id)
     }
+//    fun getPlant(id: Int?): PlantEntity {
+//        return plantRepo.selectPlant(id)
+//    }
 }
 
 class PlantDetailsViewModelFactory(private val repository: PlantRepo) : ViewModelProvider.Factory {

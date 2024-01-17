@@ -7,7 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gardeningjournal.database.PlantEntity
 
-class GardenLogAdapter(private val plants: List<PlantEntity>?, private val listener: OnItemClickListener) : RecyclerView.Adapter<GardenLogAdapter.GardenLogViewHolder>() {
+class GardenLogAdapter(private val plants: List<PlantEntity>?, private val listener: (Int) -> Unit) : RecyclerView.Adapter<GardenLogAdapter.GardenLogViewHolder>() {
     override fun onBindViewHolder(holder: GardenLogViewHolder, position: Int) {
         val _plant = plants?.get(position)
         if (_plant != null) {
@@ -15,7 +15,7 @@ class GardenLogAdapter(private val plants: List<PlantEntity>?, private val liste
         }
 
         holder.itemView.setOnClickListener {
-            _plant?.id!!.let { it1 -> listener.onItemClick(it1) }
+            _plant?.id!!.let { it1 -> listener(it1) }
         }
 
     }

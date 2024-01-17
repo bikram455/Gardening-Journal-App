@@ -10,9 +10,9 @@
         android:title="Garden Log"
         android:name="com.example.gardeningjournal.GardenLogFragment"
         />
-    <item
-        android:id="@+id/plantFragment"
-        android:title="Plant Details"
-        android:name="com.example.gardeningjournal.PlantDetailsFragment"
-        />
+<!--    <item-->
+<!--        android:id="@+id/plantFragment"-->
+<!--        android:title="Plant Details"-->
+<!--        android:name="com.example.gardeningjournal.PlantDetailsFragment"-->
+<!--        />-->
 </menu>

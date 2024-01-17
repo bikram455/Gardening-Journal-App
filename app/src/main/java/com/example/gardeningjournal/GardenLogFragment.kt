@@ -66,11 +66,16 @@ class GardenLogFragment : Fragment() {
 
         viewModel.plants.observe(viewLifecycleOwner, Observer {
             it?.let {
-                val adapter = GardenLogAdapter(it.toList(), object : GardenLogAdapter.OnItemClickListener {
-                    override fun onItemClick(position: Int) {
-                        navigateToDetailsFragment(position)
-                    }
-                })
+//                val adapter = GardenLogAdapter(it.toList(), object : GardenLogAdapter.OnItemClickListener {
+//                    override fun onItemClick(position: Int) {
+//                        navigateToDetailsFragment(position)
+//                    }
+//                })
+                val adapter = GardenLogAdapter(it.toList()) { pos: Int ->
+                    val action =
+                        GardenLogFragmentDirections.actionGardenFragmentToPlantFragment(pos)
+                    findNavController().navigate(action)
+                }
                 recyclerView.adapter = adapter
             }
         })

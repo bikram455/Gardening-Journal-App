@@ -17,4 +17,8 @@ class PlantRepo(private val plantDao: PlantDao) {
         if(id == null) return plantDao.selectLatestPlant()
         return plantDao.selectPlant(id);
     }
+
+    suspend fun selectPlantById(id: Int): PlantEntity {
+        return plantDao.selectPlantById(id);
+    }
 }

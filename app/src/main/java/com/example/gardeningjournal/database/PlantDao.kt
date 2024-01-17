@@ -17,4 +17,7 @@ interface PlantDao {
     fun selectLatestPlant(): LiveData<PlantEntity>
     @Query("Select * from plants where id= :id")
     fun selectPlant(id: Int?): LiveData<PlantEntity>
+
+    @Query("Select * from plants where id= :id")
+    fun selectPlantById(id: Int?): PlantEntity
 }

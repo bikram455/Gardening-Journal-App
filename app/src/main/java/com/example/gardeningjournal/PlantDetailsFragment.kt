@@ -5,17 +5,23 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.example.gardeningjournal.data.GardenLogViewModel
 import com.example.gardeningjournal.data.GardenLogViewModelFactory
 import com.example.gardeningjournal.data.PlantDetailsViewModel
 import com.example.gardeningjournal.data.PlantDetailsViewModelFactory
 import com.example.gardeningjournal.database.InitPlantDB
+import com.example.gardeningjournal.database.PlantEntity
 import com.example.gardeningjournal.database.PlantRepo
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 class PlantDetailsFragment : Fragment() {
     private lateinit var viewModel: PlantDetailsViewModel
@@ -23,6 +29,7 @@ class PlantDetailsFragment : Fragment() {
     private lateinit var plantType: TextView
     private lateinit var wateringFrequency: TextView
     private lateinit var plantedDate: TextView
+    private lateinit var backButton: Button
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,6 +58,7 @@ class PlantDetailsFragment : Fragment() {
         plantType = view.findViewById(R.id.plantType)
         plantedDate = view.findViewById(R.id.plantedDate)
         wateringFrequency = view.findViewById(R.id.wateringFrequency)
+        backButton = view.findViewById(R.id.back)
 
         val application = requireNotNull(this.activity).application
         val dataSource = InitPlantDB.getDatabase(application).plantDao()
@@ -68,5 +76,16 @@ class PlantDetailsFragment : Fragment() {
                 plantedDate.text = "Date planted: ${it.plantedDate}"
             }
         })
+        lifecycleScope.launch {
+            try {
+
+            } catch (e: Exception) {
+
+            }
+        }
+
+        backButton.setOnClickListener{
+            findNavController().popBackStack()
+        }
     }
 }
